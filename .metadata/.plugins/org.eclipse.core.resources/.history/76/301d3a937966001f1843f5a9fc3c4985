@@ -1,0 +1,72 @@
+package test;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class jqAjax2Controller
+ */
+@WebServlet("/jqAjax2.do")
+public class jqAjax2Controller extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public jqAjax2Controller() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// request.setCharacterEncoding("UTF-8"); ajax처리시 생략 가능
+		
+		// 요청 시 전달된 데이터 추출
+		String name = request.getParameter("name");
+		String strAge = request.getParameter("age");
+		
+		int age = -1;
+		if (!strAge.isEmpty()) {
+			age = Integer.parseInt(strAge);
+		}
+		
+		// * 문자열 하나의 데이터로 응답
+		/*
+		String result = "이름: " + name + ", 나이: " + (age == -1 ? "알수없음" : age);
+		
+		
+		response.setContentType("text/html; charset=UTF-8");
+		response.getWriter().print(result);
+		*/
+		
+		// * 응답 데이터를 여러 개 보내기
+		/*
+		response.setContentType("text/html; charset=UTF-8");
+		
+		response.getWriter().print(name);
+		response.getWriter().print(age);
+		// => 하나의 문자열로 합쳐져서 응답데이터가 전달됨.
+		*/
+		
+		// * 객체 형태로 응답
+		/**
+		 * 
+		 */
+	}
+
+}

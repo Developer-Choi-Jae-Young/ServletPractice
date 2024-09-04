@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AJAX 테스트</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <h2>AJAX</h2>
+    <p>
+        서버로부터 데이터를 가져와서 전체 페이지를 새로고침하지 않고 일부만 로드할 수 있게 하는 기법 <br>
+        기존에 사용했던 a태그, form submit 방식은 "동기화 요청"이다.
+        => 응답페이지가 돌아와야만 화면을 볼 수 있음
+    </p>
+    <h3>동기식 (a, form submit)</h3>
+    <ul>
+        <li>요청처리 후 해당 응답페이지가 돌아온 후 다음 작업 가능</li>
+        <li>서버에 요청한 결과 시간이 지연되면 무작정 계속 기다려야함</li>
+        <li>전체페이지를 응답해주기 때문에 기본적으로 플리커현상 발생</li>
+    </ul>
+
+    <h3>비동기식 (ajax)</h3>
+    <ul>
+        <li>현재 페이지를 그대로 유지하면서 중간중간 필요한 정보를 요청할 수 있음</li>
+        <li>요청 후 다른 페이지로 넘어가지 않음</li>
+        <li>요청을 보낸 후 해당 응답이 돌아오기 전에 다른작업을 진행할 수 있음</li>
+        <li>ex) 검색어 자동완성, 실시간 검색어, 아이디 중복체크, 찜하기/해제, 추천, 댓글, 무한스크롤 등등..</li>
+    </ul>
+
+    <br><br>
+
+    <h3>비동기식 단점</h3>
+    <ul>
+        <li>현재페이지에 지속적으로 리소스가 쌓임 => 페이지가 느려질 수 있음</li>
+        <li>오류 발생 시 찾기 어려움 (디버깅 어려움)</li>
+        <li>요청 처리 후 응답된 데이터를 가지고 현재 페이지에 새로운 요소를 만들어서 추가해줘야 함</li>
+    </ul>
+
+    <hr>
+
+    <h3>AJAX 구현</h3>
+    <p>
+        순수 자바스크립트 방식 (XMLHttpRequest)
+        vs
+        jQuery 방식 (간결하고 사용하기 쉬움)
+    </p>
+
+    <pre>
+        * jQuery 방식
+
+        $.ajax({
+            속성:값,
+            속성:값,
+            속성:값,
+            ..
+        });
+
+        * 주요 속성
+            - url: 요청할 url (필수)
+            - type|method: 요청 전송방식 (get/post/delete/put)
+            - data: 요청 시 전달할 값
+            - success: ajax 요청 성공 시 실행할 함수 정의
+            - error: ajax 요청 실패 시 실행할 함수 정의
+            - complete: ajax 요청 성공여부와 상관없이 무조건 실행할 함수 정의
+        
+        * 부가적인 속성
+            - async: 서버와의 비동기 처리 방식 설정 여부(기본값 true)
+            - contentType: request 데이터 인코딩 방식(보내는 쪽의 데이터 인코딩)
+            - dataType: 서버에서 response로 온 데이터의 형식 설정 (값이 없을 경우 스마트하게 판단함)
+                        xml, json, script, html, text, ...
+            - accept: 파라미터의 타입 설정
+            - beforeSend: 요청 전 실행되는 이벤트 콜백 함수 (데이터 가공, 헤더 설정)
+            - cache: 요청 및 결과값을 scope에서 가지고 있지 않도록 하는 설정(기본값 true)
+            - contents: jQuery에서 response의 데이터를 파싱하는 방식 정의
+            - context: ajax 메소드 내 모든 영역에서 파싱방식 정의
+            - crossDomain: 다른 도메인 호출 가능 여부 (기본값 false)
+            - dataFilter: 응답을 받았을 때 정상적인 값을 return할 수 있도록 데이터와 데이터타입을 설정
+            - timeout: 서버 요청 시 응답대기시간 (기본값 0)
+    </pre>
+
+    <hr>
+
+    <h3>jQuery 방식을 이용한 AJAX 테스트</h3>
+
+    <h4>1. get 방식으로 서버에 요청 및 응답받기</h4>
+    <input type="text" id="data1">
+    <button id="btn1">전송</button>
+    <br>
+    응답 결과:
+    <span id="result1">응답 없음</span>
+
+    <script>
+        // onload = funtion() {}
+        $(function() {
+            // 클릭이벤트 발생 시 실행할 함수 (이벤트핸들러)
+            $("#btn1").click(function() {
+                // 기존 동기식 통신(요청)
+                // location.href = '/jsp/jqAjax1.do?data=' + $("#data1").val()
+
+                // 비동기식 통신
+                $.ajax({
+                    url: '/jsp/jqAjax1.do',
+                    type: 'get',
+                    data: {
+                        data: $("#data1").val()
+                    },
+                    success: function(result) {
+                        // 통신 성공 시 실행될 함수. 결과(응답데이터) result변수에 담겨져 있을 것임!
+                        console.log(result);
+
+                        $("#result1").text(result);
+                    },
+                    error: function(error) {
+                        // 통신 실패 시 실행될 함수. 오류 결과가 error 변수에 담겨져 있을 것임.
+                        console.log("통신 실패!");
+                        console.log(error);
+                    },
+                    complete: function() {
+                        // 통신 성공여부 상관없이 실행될 함수
+                        console.log("통신 성공 여부 상관없이 실행!");
+                    }
+                });
+            });
+        });
+    </script>
+
+    <br>
+
+    <h4>2. post 방식으로 서버에 요청 및 응답받기</h4>
+    이름: <input type="text" id="name"> <br>
+    나이: <input type="number" id="age"> <br>
+    <button onclick="sendPostData();">전송</button>
+    <br>
+    응답결과: <div id="result2"></div>
+
+    <script>
+        // 함수 정의
+        // const sendPostData = function() {}
+        const sendPostData = () => {
+            
+            $.ajax({
+                url: '/jsp/jqAjax2.do',
+                type: 'post',
+                data: {
+                    name: $("#name").val(),
+                    age: $("#age").val()
+                },
+                success: function(result) {
+                    console.log(typeof result);
+                    console.log(result);
+                    /*
+                    // * 문자열로 응답된 데이터 처리
+                    $("#result2").text(result);
+                    */
+
+                    // * JSONArray 타입으로 응답된 데이터 처리
+                    // $("#result2").text(""); // 기존에 데이터 초기화
+                    /*
+                    for(let item of result) {
+                        $("#result2").append("<p>" + item + "</p>");
+                    }
+                    */
+                   
+                    // * JSONObject 타입으로 응답된 데이터 
+                    // reuslt => { name: 'xxx', age: xx }
+                    const element = "<ul>"
+                                  + "<li>" + result.name + "</li>"
+                                  + "<li>" + result.age + "</li>"
+                                  + "</ul>";
+
+                    $("#result2").html(element);             
+                }, 
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+
+        }
+    </script>
+
+    <br>
+
+    <h4>3. vo 객체로 응답받기</h4>
+    회원번호: <input type="number" id="userNo">
+    <button onclick="searchUser();">조회</button>
+    <div id="result3"></div>
+
+    <script>
+        function searchUser() {
+            $.ajax({
+                url: '/jsp/jqAjax3.do',
+                type: 'get',
+                data: {
+                    userNo: $("#userNo").val()
+                },
+                success: function(result) {
+                    console.log(typeof result);
+                    console.log(result);
+                    const element = "<ul>"
+                                   + "<li>" + result.userId + "</li>"
+                                   + "<li>" + result.address + "</li>"
+                                   + "<li>" + result.userNo + "</li>"
+                                   + "<li>" + result.userName + "</li>"
+                                    +"</ul>"
+                    
+                    $("#result3").append(element);
+                },
+                error: function(err) {
+                    console.log(err);
+                },
+                complete: function() {
+                    console.log("this is complete code line");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
